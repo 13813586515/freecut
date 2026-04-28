@@ -52,6 +52,11 @@ interface AppSettings {
 
   // Keyboard shortcuts
   hotkeyOverrides: HotkeyOverrideMap
+
+  // Stock Media API Keys
+  pexelsApiKey: string
+  pixabayApiKey: string
+  freesoundApiKey: string
 }
 
 export type CaptionSearchMode = 'keyword' | 'semantic'
@@ -145,6 +150,11 @@ const DEFAULT_SETTINGS: AppSettings = {
 
   // Keyboard shortcuts
   hotkeyOverrides: {},
+
+  // Stock Media API Keys
+  pexelsApiKey: '',
+  pixabayApiKey: '',
+  freesoundApiKey: '',
 }
 
 /**
