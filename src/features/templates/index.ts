@@ -3,3 +3,5 @@
 
 export { useTemplateStore } from './stores/template-store'
 export type { TemplateStore, TemplateFormData } from './types'
+export { TemplatePickerDialog } from './components/template-picker-dialog'
+export { SaveAsTemplateDialog } from './components/save-as-template-dialog'
