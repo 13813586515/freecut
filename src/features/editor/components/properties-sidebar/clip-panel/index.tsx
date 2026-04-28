@@ -22,6 +22,9 @@ import { TextSection } from './text-section'
 import { ShapeSection } from './shape-section'
 import { CornerPinSection } from './corner-pin-section'
 import { EffectsSection } from '@/features/editor/deps/effects-contract'
+import { ReframePanel } from '@/features/reframe'
+import type { FrameAnimationItem, ImageItem } from '@/types/timeline'
+import { getSourceDimensions } from '@/features/editor/deps/composition-runtime'
 
 /**
  * Check if an item is a GIF (image with .gif extension)
@@ -45,12 +48,15 @@ function computeItemTypeInfo(items: TimelineItem[]) {
       types.has('text') ||
       types.has('shape') ||
       types.has('adjustment') ||
-      types.has('composition'),
+      types.has('composition') ||
+      types.has('frame-animation'),
     hasVideoItems: types.has('video'),
+    hasImageItems: types.has('image'),
     hasGifItems,
     hasAudioItems: types.has('video') || types.has('audio'),
     hasTextItems: types.has('text'),
     hasShapeItems: types.has('shape'),
+    hasFrameAnimationItems: types.has('frame-animation'),
     hasAdjustmentItems: types.has('adjustment'),
     isOnlyTextOrShape:
       items.length > 0 && items.every((item) => item.type === 'text' || item.type === 'shape'),
@@ -112,10 +118,12 @@ export const ClipPanel = memo(function ClipPanel() {
   const {
     hasVisualItems,
     hasVideoItems,
+    hasImageItems,
     hasGifItems,
     hasAudioItems,
     hasTextItems,
     hasShapeItems,
+    hasFrameAnimationItems,
     hasAdjustmentItems,
     isOnlyTextOrShape,
   } = itemTypeInfo
@@ -240,6 +248,23 @@ export const ClipPanel = memo(function ClipPanel() {
                   onTransformChange={handleTransformChange}
                   aspectLocked={aspectLocked}
                   onAspectLockToggle={handleAspectLockToggle}
+                />
+              )}
+              {(hasVideoItems || hasImageItems) && selectedItems.length === 1 && (
+                <ReframePanel
+                  projectWidth={projectWidth}
+                  projectHeight={projectHeight}
+                  selectedItem={(() => {
+                    const item = selectedItems[0]
+                    if (!item) return null
+                    const sourceDims = getSourceDimensions(item)
+                    return {
+                      id: item.id,
+                      type: item.type,
+                      sourceWidth: sourceDims?.width,
+                      sourceHeight: sourceDims?.height,
+                    }
+                  })()}
                 />
               )}
               {hasVideoItems && <VideoSection items={selectedItems} />}

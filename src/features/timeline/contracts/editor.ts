@@ -27,6 +27,7 @@ export {
   createDefaultShapeItem,
   createDefaultTextItem,
   createTextTemplateItem,
+  createDefaultFrameAnimationItem,
   getDefaultGeneratedLayerDurationInFrames,
 } from '../utils/generated-layer-items'
 export { findCompatibleTrackForItemType } from '../utils/track-item-compatibility'
