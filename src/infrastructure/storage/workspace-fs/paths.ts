@@ -475,3 +475,30 @@ export function proxyMetaPath(proxyKey: string): string[] {
 export function proxyDir(proxyKey: string): string[] {
   return [...proxiesRoot(), proxyKey]
 }
+
+/* ---------------- Templates ---------------- */
+
+export const TEMPLATES_DIR = 'templates'
+export const TEMPLATE_INDEX_FILENAME = 'index.json'
+export const TEMPLATE_CONTENT_FILENAME = 'template.json'
+export const TEMPLATE_THUMBNAIL_FILENAME = 'thumbnail.jpg'
+
+export function templatesRoot(): string[] {
+  return [TEMPLATES_DIR]
+}
+
+export function templateIndexPath(): string[] {
+  return [TEMPLATES_DIR, TEMPLATE_INDEX_FILENAME]
+}
+
+export function templateDir(templateId: string): string[] {
+  return [TEMPLATES_DIR, templateId]
+}
+
+export function templateJsonPath(templateId: string): string[] {
+  return [...templateDir(templateId), TEMPLATE_CONTENT_FILENAME]
+}
+
+export function templateThumbnailPath(templateId: string): string[] {
+  return [...templateDir(templateId), TEMPLATE_THUMBNAIL_FILENAME]
+}

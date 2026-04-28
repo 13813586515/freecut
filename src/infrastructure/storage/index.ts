@@ -149,3 +149,19 @@ export {
   type TrashMarker,
   type TrashedProjectEntry,
 } from '@/infrastructure/storage/workspace-fs/trash'
+
+// Templates
+export {
+  getAllTemplates,
+  getTemplate,
+  getTemplateThumbnail,
+  createTemplate,
+  updateTemplate,
+  deleteTemplate,
+  saveTemplateThumbnail,
+  getTemplatesByCategory,
+  searchTemplates,
+  exportTemplateToJson,
+  importTemplateFromJson,
+  type TemplateIndex,
+} from '@/infrastructure/storage/workspace-fs/templates'

@@ -38,6 +38,10 @@ import {
   Rows3,
   HardDrive,
   Sparkles,
+  Globe,
+  ExternalLink,
+  Eye,
+  EyeOff,
 } from 'lucide-react'
 import {
   LocalInferenceUnloadControl,
@@ -72,6 +76,7 @@ const SETTINGS_SECTIONS = [
   { id: 'timeline', label: 'Timeline', icon: Rows3 },
   { id: 'ai', label: 'AI', icon: Sparkles },
   { id: 'storage', label: 'Storage', icon: HardDrive },
+  { id: 'integrations', label: 'Integrations', icon: Globe },
 ] as const
 
 const ESTIMATE_REFERENCE_DURATION_SEC = 60
@@ -342,6 +347,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const maxUndoHistory = useSettingsStore((s) => s.maxUndoHistory)
   const captioningIntervalUnit = useSettingsStore((s) => s.captioningIntervalUnit)
   const captioningIntervalValue = useSettingsStore((s) => s.captioningIntervalValue)
+  const pexelsApiKey = useSettingsStore((s) => s.pexelsApiKey)
+  const pixabayApiKey = useSettingsStore((s) => s.pixabayApiKey)
+  const freesoundApiKey = useSettingsStore((s) => s.freesoundApiKey)
   const setSetting = useSettingsStore((s) => s.setSetting)
   const resetToDefaults = useSettingsStore((s) => s.resetToDefaults)
 
@@ -362,6 +370,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [clearFeedback, setClearFeedback] = useState<ActionFeedback | null>(null)
   const [regenFeedback, setRegenFeedback] = useState<ActionFeedback | null>(null)
   const [proxyFeedback, setProxyFeedback] = useState<ActionFeedback | null>(null)
+
+  const [showPexelsKey, setShowPexelsKey] = useState(false)
+  const [showPixabayKey, setShowPixabayKey] = useState(false)
+  const [showFreesoundKey, setShowFreesoundKey] = useState(false)
 
   const handleClearCache = useCallback(async () => {
     setClearState('clearing')
@@ -874,6 +886,137 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     </div>
                     <LocalInferenceUnloadControl />
                     <LocalModelCacheControl />
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'integrations' && (
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">Pexels API Key</Label>
+                        <a
+                          href="https://www.pexels.com/api/new/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          Get API Key
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          type={showPexelsKey ? 'text' : 'password'}
+                          placeholder="Enter your Pexels API key"
+                          value={pexelsApiKey}
+                          onChange={(e) => setSetting('pexelsApiKey', e.target.value)}
+                          className="pr-10"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
+                          onClick={() => setShowPexelsKey(!showPexelsKey)}
+                        >
+                          {showPexelsKey ? (
+                            <EyeOff className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Access free stock photos and videos from Pexels.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-white/8" />
+
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">Pixabay API Key</Label>
+                        <a
+                          href="https://pixabay.com/api/docs/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          Get API Key
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          type={showPixabayKey ? 'text' : 'password'}
+                          placeholder="Enter your Pixabay API key"
+                          value={pixabayApiKey}
+                          onChange={(e) => setSetting('pixabayApiKey', e.target.value)}
+                          className="pr-10"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
+                          onClick={() => setShowPixabayKey(!showPixabayKey)}
+                        >
+                          {showPixabayKey ? (
+                            <EyeOff className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Access free stock photos, illustrations, and videos from Pixabay.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-white/8" />
+
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">Freesound API Key</Label>
+                        <a
+                          href="https://freesound.org/apiv2/apply"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          Get API Key
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          type={showFreesoundKey ? 'text' : 'password'}
+                          placeholder="Enter your Freesound API key"
+                          value={freesoundApiKey}
+                          onChange={(e) => setSetting('freesoundApiKey', e.target.value)}
+                          className="pr-10"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
+                          onClick={() => setShowFreesoundKey(!showFreesoundKey)}
+                        >
+                          {showFreesoundKey ? (
+                            <EyeOff className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Access free sound effects and music from Freesound.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
