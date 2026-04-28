@@ -3,6 +3,12 @@ import type { ItemEffect } from './effects'
 import type { BlendMode } from './blend-modes'
 import type { AudioEqSettings } from './audio'
 import type { TextStylePresetId } from '@/shared/typography/text-style-preset-ids'
+import type {
+  DrawingLayer,
+  DrawingOnionSkinSettings,
+  DrawingPlaybackMode,
+  DrawingBlendMode,
+} from '@/features/frame-animation'
 
 export interface TimelineItemCornerPin {
   topLeft: [number, number]
@@ -256,6 +262,22 @@ export type CompositionItem = BaseTimelineItem & {
   compositionHeight: number
 }
 
+export type FrameAnimationItem = BaseTimelineItem & {
+  type: 'frame-animation'
+  // Frame animation specific properties
+  fps: number
+  width: number
+  height: number
+  layers: DrawingLayer[]
+  activeLayerId: string | null
+  currentFrame: number
+  onionSkinSettings: DrawingOnionSkinSettings
+  playbackMode: DrawingPlaybackMode
+  backgroundColor: string
+  // Blend mode for layer compositing
+  frameBlendMode?: DrawingBlendMode
+}
+
 // Union type for all timeline items
 export type TimelineItem =
   | VideoItem
@@ -265,6 +287,7 @@ export type TimelineItem =
   | ShapeItem
   | AdjustmentItem
   | CompositionItem
+  | FrameAnimationItem
 
 export interface TimelineTrack {
   id: string

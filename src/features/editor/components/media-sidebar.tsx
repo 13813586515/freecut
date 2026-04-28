@@ -38,11 +38,12 @@ import {
   createDefaultAdjustmentItem,
   createDefaultShapeItem,
   createTextTemplateItem,
+  createDefaultFrameAnimationItem,
   findCompatibleTrackForItemType,
   findNearestAvailableSpace,
   getDefaultGeneratedLayerDurationInFrames,
 } from '@/features/editor/deps/timeline-utils'
-import type { TextItem, ShapeItem, ShapeType, AdjustmentItem } from '@/types/timeline'
+import type { TextItem, ShapeItem, ShapeType, AdjustmentItem, FrameAnimationItem } from '@/types/timeline'
 import { useMaskEditorStore } from '@/features/editor/deps/preview'
 import type { VisualEffect, GpuEffect } from '@/types/effects'
 import { EFFECT_PRESETS } from '@/types/effects'
@@ -492,6 +493,50 @@ export const MediaSidebar = memo(function MediaSidebar() {
     selectItems([adjustmentItem.id])
   }, [])
 
+  // Add frame animation item to timeline at the best available position
+  const handleAddFrameAnimation = useCallback(() => {
+    // Read all needed state from stores directly to avoid subscriptions
+    const { tracks, items, fps, addItem } = useTimelineStore.getState()
+    const { activeTrackId, selectItems } = useSelectionStore.getState()
+    const currentProject = useProjectStore.getState().currentProject
+
+    const targetTrack = findCompatibleTrackForItemType({
+      tracks,
+      items,
+      itemType: 'shape',
+      preferredTrackId: activeTrackId,
+    })
+
+    if (!targetTrack) {
+      logger.warn('No available track for frame animation item')
+      return
+    }
+
+    const durationInFrames = getDefaultGeneratedLayerDurationInFrames(fps)
+
+    // Find the best position: start at playhead, find nearest available space
+    const proposedPosition = usePlaybackStore.getState().currentFrame
+    const finalPosition =
+      findNearestAvailableSpace(proposedPosition, durationInFrames, targetTrack.id, items) ??
+      proposedPosition
+
+    const canvasWidth = currentProject?.metadata.width ?? 1920
+    const canvasHeight = currentProject?.metadata.height ?? 1080
+
+    const frameAnimationItem: FrameAnimationItem = createDefaultFrameAnimationItem({
+      trackId: targetTrack.id,
+      from: finalPosition,
+      durationInFrames,
+      canvasWidth,
+      canvasHeight,
+      fps,
+    })
+
+    addItem(frameAnimationItem)
+    // Select the new item
+    selectItems([frameAnimationItem.id])
+  }, [])
+
   // Create adjustment layer with preset effects
   const handleAddPreset = useCallback(
     (presetId: string) => {
@@ -582,7 +627,7 @@ export const MediaSidebar = memo(function MediaSidebar() {
 
   const handleTemplateDragStart = useCallback(
     (payload: {
-      itemType: 'text' | 'shape' | 'adjustment'
+      itemType: 'text' | 'shape' | 'adjustment' | 'frame-animation'
       label: string
       textStylePresetId?: (typeof TEXT_STYLE_PRESETS)[number]['id']
       shapeType?: ShapeType
@@ -991,6 +1036,28 @@ export const MediaSidebar = memo(function MediaSidebar() {
                   </div>
                   <span className="text-[9px] text-muted-foreground group-hover:text-foreground">
                     Pen
+                  </span>
+                </button>
+
+                <button
+                  draggable={true}
+                  onDragStart={handleTemplateDragStart({
+                    itemType: 'frame-animation',
+                    label: 'Frame Animation',
+                  })}
+                  onDragEnd={handleTemplateDragEnd}
+                  onClick={() => {
+                    if (shouldSuppressGeneratedItemClick()) return
+                    handleAddFrameAnimation()
+                  }}
+                  className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg border border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50 transition-colors group"
+                  title="Create a frame-by-frame hand-drawn animation"
+                >
+                  <div className="w-7 h-7 rounded border border-border bg-secondary/50 flex items-center justify-center group-hover:bg-secondary/70">
+                    <Film className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground" />
+                  </div>
+                  <span className="text-[9px] text-muted-foreground group-hover:text-foreground">
+                    Frame Anim
                   </span>
                 </button>
               </div>

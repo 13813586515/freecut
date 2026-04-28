@@ -1,16 +1,20 @@
 import type { VisualEffect } from '@/types/effects'
-import type { AdjustmentItem, ShapeItem, ShapeType, TextItem } from '@/types/timeline'
+import type { AdjustmentItem, ShapeItem, ShapeType, TextItem, FrameAnimationItem } from '@/types/timeline'
 import {
   TEXT_STYLE_PRESETS,
   buildTextStylePresetTemplate,
   type TextStylePresetId,
 } from '@/shared/typography/text-style-presets'
+import {
+  createInitialLayer,
+  DrawingEngine,
+} from '@/features/frame-animation'
 
 export const DEFAULT_GENERATED_LAYER_DURATION_SECONDS = 60
 
 export interface TimelineTemplateDragData {
   type: 'timeline-template'
-  itemType: 'text' | 'shape' | 'adjustment'
+  itemType: 'text' | 'shape' | 'adjustment' | 'frame-animation'
   label: string
   textStylePresetId?: TextStylePresetId
   shapeType?: ShapeType
@@ -37,7 +41,8 @@ export function isTimelineTemplateDragData(value: unknown): value is TimelineTem
   if (
     candidate.itemType !== 'text' &&
     candidate.itemType !== 'shape' &&
-    candidate.itemType !== 'adjustment'
+    candidate.itemType !== 'adjustment' &&
+    candidate.itemType !== 'frame-animation'
   )
     return false
   if (typeof candidate.label !== 'string' || candidate.label.trim().length === 0) return false
@@ -48,6 +53,10 @@ export function isTimelineTemplateDragData(value: unknown): value is TimelineTem
     return false
   }
   if (candidate.effects !== undefined && !Array.isArray(candidate.effects)) return false
+
+  if (candidate.itemType === 'frame-animation') {
+    return true
+  }
 
   return (
     candidate.itemType !== 'shape' ||
@@ -200,10 +209,54 @@ export function createDefaultAdjustmentItem(
   }
 }
 
+export function createDefaultFrameAnimationItem(
+  params: VisualLayerPlacement & {
+    label?: string
+  },
+): FrameAnimationItem {
+  const { trackId, from, durationInFrames, canvasWidth, canvasHeight, fps = 24, label } = params
+
+  const initialLayer = createInitialLayer('图层 1', 0)
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'frame-animation',
+    trackId,
+    from,
+    durationInFrames,
+    label: label ?? '逐帧动画',
+    fps,
+    width: canvasWidth,
+    height: canvasHeight,
+    layers: [initialLayer],
+    activeLayerId: initialLayer.id,
+    currentFrame: 0,
+    onionSkinSettings: {
+      enabled: false,
+      prevFrames: 2,
+      nextFrames: 1,
+      opacityStep: 0.3,
+      colorMode: 'tint',
+      prevTint: '#00ffff',
+      nextTint: '#ff00ff',
+    },
+    playbackMode: 'loop',
+    backgroundColor: 'transparent',
+    transform: {
+      x: 0,
+      y: 0,
+      width: canvasWidth,
+      height: canvasHeight,
+      rotation: 0,
+      opacity: 1,
+    },
+  }
+}
+
 export function createTimelineTemplateItem(params: {
   template: TimelineTemplateDragData
   placement: VisualLayerPlacement
-}): TextItem | ShapeItem | AdjustmentItem {
+}): TextItem | ShapeItem | AdjustmentItem | FrameAnimationItem {
   const { template, placement } = params
 
   if (template.itemType === 'text') {
@@ -221,6 +274,13 @@ export function createTimelineTemplateItem(params: {
       durationInFrames: placement.durationInFrames,
       label: template.label,
       effects: template.effects,
+    })
+  }
+
+  if (template.itemType === 'frame-animation') {
+    return createDefaultFrameAnimationItem({
+      ...placement,
+      label: template.label,
     })
   }
 
