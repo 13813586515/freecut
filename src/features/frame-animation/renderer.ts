@@ -3,9 +3,9 @@ import type {
   DrawingLayer,
   DrawingElement,
   DrawingFrame,
-} from '../types'
-import { DrawingEngine } from '../drawing-engine'
-import { frameCache } from '../frame-cache'
+} from './types'
+import { DrawingEngine } from './drawing-engine'
+import { frameCache } from './frame-cache'
 import { createLogger } from '@/shared/logging/logger'
 
 const log = createLogger('FrameAnimationRenderer')
