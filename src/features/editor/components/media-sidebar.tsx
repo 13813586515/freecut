@@ -5,6 +5,7 @@ import {
   ChevronRight,
   ChevronUp,
   Film,
+  Globe,
   Layers,
   LineChart,
   Type,
@@ -54,6 +55,7 @@ import { useEffectPreviews } from '@/features/editor/deps/effects-contract'
 import { createLogger } from '@/shared/logging/logger'
 import { useSettingsStore } from '@/features/editor/deps/settings'
 import { AiPanel } from './ai-panel'
+import { StockMediaPanel } from '@/features/stock-media/components/stock-media-panel'
 import {
   TEXT_STYLE_PRESETS,
   type TextStylePresetLayout,
@@ -564,6 +566,7 @@ export const MediaSidebar = memo(function MediaSidebar() {
   // Category items for the vertical nav
   const categories = [
     { id: 'media' as const, icon: Film, label: 'Media' },
+    { id: 'stock' as const, icon: Globe, label: 'Stock' },
     { id: 'text' as const, icon: Type, label: 'Text' },
     { id: 'shapes' as const, icon: Pentagon, label: 'Shapes' },
     { id: 'effects' as const, icon: Layers, label: 'Effects' },
@@ -743,6 +746,13 @@ export const MediaSidebar = memo(function MediaSidebar() {
               className={`min-h-0 flex-1 overflow-hidden ${activeTab === 'media' ? 'block' : 'hidden'}`}
             >
               <MediaLibrary />
+            </div>
+
+            {/* Stock Media Tab */}
+            <div
+              className={`min-h-0 flex-1 overflow-hidden ${activeTab === 'stock' ? 'block' : 'hidden'}`}
+            >
+              <StockMediaPanel />
             </div>
 
             {/* Text Tab */}

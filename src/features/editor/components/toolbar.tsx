@@ -8,6 +8,7 @@ import {
   FolderArchive,
   Github,
   Keyboard,
+  LayoutTemplate,
   Save,
   Settings,
   Sparkles,
@@ -18,6 +19,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -28,6 +30,7 @@ import { SettingsDialog } from './settings-dialog'
 import { ShortcutsDialog } from './shortcuts-dialog'
 import { UnsavedChangesDialog } from './unsaved-changes-dialog'
 import { WhatsNewDialog } from './whats-new-dialog'
+import { SaveAsTemplateDialog } from '@/features/templates/components/save-as-template-dialog'
 import { hasUnseenChangelog } from './whats-new-seen'
 import { EDITOR_LAYOUT_CSS_VALUES } from '@/app/editor-layout'
 import { cn } from '@/shared/ui/cn'
@@ -61,6 +64,7 @@ export const Toolbar = memo(function Toolbar({
   const [showShortcutsDialog, setShowShortcutsDialog] = useState(false)
   const [showSettingsDialog, setShowSettingsDialog] = useState(false)
   const [showWhatsNewDialog, setShowWhatsNewDialog] = useState(false)
+  const [showSaveAsTemplateDialog, setShowSaveAsTemplateDialog] = useState(false)
   const [hasUnseenWhatsNew, setHasUnseenWhatsNew] = useState(false)
 
   useEffect(() => {
@@ -134,6 +138,12 @@ export const Toolbar = memo(function Toolbar({
       <SettingsDialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog} />
 
       <WhatsNewDialog open={showWhatsNewDialog} onOpenChange={setShowWhatsNewDialog} />
+
+      <SaveAsTemplateDialog
+        open={showSaveAsTemplateDialog}
+        onOpenChange={setShowSaveAsTemplateDialog}
+        projectId={projectId}
+      />
 
       <div className="flex items-center gap-1.5">
         {import.meta.env.DEV && import.meta.env.VITE_SHOW_DEBUG_PANEL !== 'false' && (
@@ -222,6 +232,11 @@ export const Toolbar = memo(function Toolbar({
             <DropdownMenuItem onClick={onExportBundle} className="gap-2">
               <FolderArchive className="h-4 w-4" />
               Download Project (.zip)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setShowSaveAsTemplateDialog(true)} className="gap-2">
+              <LayoutTemplate className="h-4 w-4" />
+              Save as Template
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

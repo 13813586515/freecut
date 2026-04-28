@@ -3,3 +3,4 @@
 
 export { useStockMediaStore } from './stores/stock-media-store'
 export type { StockMediaStore, StockMediaServiceConfig } from './types'
+export { StockMediaPanel } from './components/stock-media-panel'
