@@ -491,28 +491,43 @@ const ItemContextMenuFull = memo(function ItemContextMenuFull({
         )}
 
         {/* Efficiency Tools Submenu */}
-        {(hasWaveform || isMediaItem || canUseMulticam) && (
+        {/* Use isVideoItem (already passed from index.tsx) as a fallback since new props may not be wired yet */}
+        {(hasWaveform || isMediaItem || canUseMulticam || isVideoItem) && (
           <>
             <ContextMenuSub>
               <ContextMenuSubTrigger>Efficiency Tools</ContextMenuSubTrigger>
               <ContextMenuSubContent className="w-56">
-                {hasWaveform && onDetectSilence && (
+                {hasWaveform && onDetectSilence ? (
                   <ContextMenuItem onClick={onDetectSilence}>
                     Detect Silence & Auto-Crop
                     <ContextMenuShortcut>Shift+S</ContextMenuShortcut>
                   </ContextMenuItem>
+                ) : (
+                  <ContextMenuItem disabled>
+                    Detect Silence & Auto-Crop
+                    <ContextMenuShortcut className="opacity-50">Shift+S</ContextMenuShortcut>
+                  </ContextMenuItem>
                 )}
-                {isMediaItem && onTimeRemapping && (
+                {(isMediaItem || isVideoItem) && onTimeRemapping ? (
                   <ContextMenuItem onClick={onTimeRemapping}>
                     Time Remapping / Speed Curve
                   </ContextMenuItem>
+                ) : (
+                  <ContextMenuItem disabled>
+                    Time Remapping / Speed Curve
+                  </ContextMenuItem>
                 )}
-                {(hasWaveform || isMediaItem) && (
+                {(hasWaveform || isMediaItem || isVideoItem) && (
                   <ContextMenuSeparator />
                 )}
-                {canUseMulticam && onOpenMulticam && (
+                {canUseMulticam && onOpenMulticam ? (
                   <ContextMenuItem onClick={onOpenMulticam}>
                     Multicam Sync & Edit
+                  </ContextMenuItem>
+                ) : (
+                  <ContextMenuItem disabled>
+                    Multicam Sync & Edit
+                    <ContextMenuShortcut className="opacity-50">(Select 2+ clips)</ContextMenuShortcut>
                   </ContextMenuItem>
                 )}
               </ContextMenuSubContent>
