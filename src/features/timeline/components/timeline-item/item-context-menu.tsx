@@ -73,6 +73,14 @@ interface ItemContextMenuProps {
     method: 'histogram' | 'optical-flow',
     verificationModel?: VerificationModel,
   ) => void
+  /** NEW: Efficiency Tools */
+  isMediaItem?: boolean
+  hasWaveform?: boolean
+  onDetectSilence?: () => void
+  onTimeRemapping?: () => void
+  /** Multicam - only available when 2+ items selected with waveform */
+  canUseMulticam?: boolean
+  onOpenMulticam?: () => void
 }
 
 /**
@@ -124,6 +132,12 @@ export const ItemContextMenu = memo(function ItemContextMenu({
   canDetectScenes,
   isDetectingScenes,
   onDetectScenes,
+  isMediaItem,
+  hasWaveform,
+  onDetectSilence,
+  onTimeRemapping,
+  canUseMulticam,
+  onOpenMulticam,
 }: ItemContextMenuProps) {
   // Lazy mount: defer the full Radix ContextMenu tree until first right-click.
   // This eliminates ~10 Radix provider components per item from the render tree
@@ -186,6 +200,12 @@ export const ItemContextMenu = memo(function ItemContextMenu({
       canDetectScenes={canDetectScenes}
       isDetectingScenes={isDetectingScenes}
       onDetectScenes={onDetectScenes}
+      isMediaItem={isMediaItem}
+      hasWaveform={hasWaveform}
+      onDetectSilence={onDetectSilence}
+      onTimeRemapping={onTimeRemapping}
+      canUseMulticam={canUseMulticam}
+      onOpenMulticam={onOpenMulticam}
       pendingActivation={pendingActivation}
       onPendingActivationHandled={() => setPendingActivation(null)}
     >
@@ -266,6 +286,12 @@ const ItemContextMenuFull = memo(function ItemContextMenuFull({
   canDetectScenes,
   isDetectingScenes,
   onDetectScenes,
+  isMediaItem,
+  hasWaveform,
+  onDetectSilence,
+  onTimeRemapping,
+  canUseMulticam,
+  onOpenMulticam,
   pendingActivation,
   onPendingActivationHandled,
 }: Omit<ItemContextMenuProps, 'children'> & {
@@ -460,6 +486,37 @@ const ItemContextMenuFull = memo(function ItemContextMenuFull({
             ) : (
               <ContextMenuItem onClick={onOpenCaptionDialog}>{captionActionLabel}</ContextMenuItem>
             )}
+            <ContextMenuSeparator />
+          </>
+        )}
+
+        {/* Efficiency Tools Submenu */}
+        {(hasWaveform || isMediaItem || canUseMulticam) && (
+          <>
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>Efficiency Tools</ContextMenuSubTrigger>
+              <ContextMenuSubContent className="w-56">
+                {hasWaveform && onDetectSilence && (
+                  <ContextMenuItem onClick={onDetectSilence}>
+                    Detect Silence & Auto-Crop
+                    <ContextMenuShortcut>Shift+S</ContextMenuShortcut>
+                  </ContextMenuItem>
+                )}
+                {isMediaItem && onTimeRemapping && (
+                  <ContextMenuItem onClick={onTimeRemapping}>
+                    Time Remapping / Speed Curve
+                  </ContextMenuItem>
+                )}
+                {(hasWaveform || isMediaItem) && (
+                  <ContextMenuSeparator />
+                )}
+                {canUseMulticam && onOpenMulticam && (
+                  <ContextMenuItem onClick={onOpenMulticam}>
+                    Multicam Sync & Edit
+                  </ContextMenuItem>
+                )}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
             <ContextMenuSeparator />
           </>
         )}
